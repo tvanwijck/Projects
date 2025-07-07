@@ -1,0 +1,213 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--gray-50);
+  padding: 20px;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--gray-200);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+  color: var(--gray-900);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: 'Oswald', sans-serif;
+}
+
+.auth-header p {
+  color: var(--gray-600);
+  font-size: 1rem;
+  font-family: 'Nunito', sans-serif;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--gray-900);
+  font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  font-family: 'Nunito', sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-900);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(82, 82, 91, 0.1);
+}
+
+.form-group input::placeholder {
+  color: var(--gray-600);
+  font-family: 'Nunito', sans-serif;
+}
+
+.auth-button {
+  background-color: var(--primary-dark);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Nunito', sans-serif;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: var(--primary);
+}
+
+.auth-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.auth-footer p {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
+}
+
+.auth-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.demo-credentials {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+}
+
+.demo-credentials h3 {
+  color: var(--gray-900);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Oswald', sans-serif;
+}
+
+.demo-credentials p {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+  font-family: 'Nunito', sans-serif;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: var(--primary);
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Dark mode styles */
+body.dark-mode .auth-container {
+  background-color: var(--gray-800);
+}
+
+body.dark-mode .auth-card {
+  background: var(--gray-900);
+  border-color: var(--gray-700);
+}
+
+body.dark-mode .auth-header h1 {
+  color: var(--gray-100);
+}
+
+body.dark-mode .auth-header p {
+  color: var(--gray-300);
+}
+
+body.dark-mode .form-group label {
+  color: var(--gray-100);
+}
+
+body.dark-mode .form-group input {
+  background: var(--gray-800);
+  border-color: var(--gray-600);
+  color: var(--gray-100);
+}
+
+body.dark-mode .form-group input:focus {
+  border-color: var(--primary);
+}
+
+body.dark-mode .form-group input::placeholder {
+  color: var(--gray-400);
+}
+
+body.dark-mode .auth-footer {
+  border-top-color: var(--gray-700);
+}
+
+body.dark-mode .auth-footer p {
+  color: var(--gray-300);
+}
+
+body.dark-mode .demo-credentials {
+  background: var(--gray-800);
+  border-left-color: var(--primary);
+}
+
+body.dark-mode .demo-credentials h3 {
+  color: var(--gray-100);
+}
+
+body.dark-mode .demo-credentials p {
+  color: var(--gray-300);
+} 
