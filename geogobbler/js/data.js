@@ -1072,7 +1072,7 @@ const GAME_DATA = {
         },
         { 
             name: "Glenbow", 
-            coords: [51.0449777, -114.0611335], 
+            coords: [51.04545949573315, -114.06094350602682], 
             img: "images/51.0449777,-114.0611335.jpg", 
             hint: "Hint text",
             panoramaId: "-QcUDN-al2-hUdCb0mXS5g",
@@ -1357,8 +1357,43 @@ const GAME_DATA = {
             resolution: "16384x8192",
             elevation: null,
             copyright: "From the Owner, Photo by: Google"
+        },
+	    { 
+            name: "18.4261698,-66.0584316", 
+            coords: [18.4261698, -66.0584316], 
+            img: "images/18.4261698,-66.0584316.jpg", 
+            hint: "Hint text",
+            panoramaId: "QfqjiCC74tTknRGxPV8tWQ",
+            northRotation: 282.09,
+            dateTaken: "2025-01-01",
+            resolution: "16384x8192",
+            elevation: null,
+            copyright: "From the Owner, Photo by: Google"
         }
-
+	    { 
+            name: "36.7995032,10.1759548", 
+            coords: [36.7995032, 10.1759548], 
+            img: "images/36.7995032,10.1759548.jpg", 
+            hint: "Hint text",
+            panoramaId: "I7m-dAYdRoNAef8VWuoK6A",
+            northRotation: 159.54,
+            dateTaken: "2016-07-01",
+            resolution: "16384x8192",
+            elevation: null,
+            copyright: "From the Owner, Photo by: Google"
+        }
+	    { 
+            name: "45.4332016,12.3397699", 
+            coords: [45.4332016, 12.3397699], 
+            img: "images/45.4332016,12.3397699.jpg", 
+            hint: "Hint text",
+            panoramaId: "M6Z4BW0e4FIY1frPfUIl2g",
+            northRotation: 193.54,
+            dateTaken: "2018-09-01",
+            resolution: "8192x4096",
+            elevation: null,
+            copyright: "From the Owner, Photo by: Google"
+        }
 
 
 
