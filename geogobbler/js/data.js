@@ -1369,7 +1369,7 @@ const GAME_DATA = {
             resolution: "16384x8192",
             elevation: null,
             copyright: "From the Owner, Photo by: Google"
-        }
+        },
 	    { 
             name: "36.7995032,10.1759548", 
             coords: [36.7995032, 10.1759548], 
@@ -1381,7 +1381,7 @@ const GAME_DATA = {
             resolution: "16384x8192",
             elevation: null,
             copyright: "From the Owner, Photo by: Google"
-        }
+        },
 	    { 
             name: "45.4332016,12.3397699", 
             coords: [45.4332016, 12.3397699], 
