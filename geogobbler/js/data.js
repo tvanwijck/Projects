@@ -1393,7 +1393,7 @@ const GAME_DATA = {
             resolution: "8192x4096",
             elevation: null,
             copyright: "From the Owner, Photo by: Google"
-        }
+        },
 
 
 
