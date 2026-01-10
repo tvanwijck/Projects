@@ -31,19 +31,19 @@
 <main>
     <aside>
         <button class="nav-btn active" onclick="game.switchMode('explorer')">
-            <i class="fa-solid fa-street-view"></i> <span class="nav-text">World Explorer</span>
+            <i class="fa-solid fa-street-view"></i> <span class="nav-text">GeoGobbler</span>
         </button>
         <button class="nav-btn" onclick="game.switchMode('flag')">
-            <i class="fa-solid fa-flag"></i> <span class="nav-text">Flag Master</span>
+            <i class="fa-solid fa-flag"></i> <span class="nav-text">Flag Fusilier</span>
         </button>
         <button class="nav-btn" onclick="game.switchMode('shape')">
             <i class="fa-solid fa-map"></i> <span class="nav-text">Shape Shifter</span>
         </button>
         <button class="nav-btn" onclick="game.switchMode('capital')">
-            <i class="fa-solid fa-city"></i> <span class="nav-text">Capital City</span>
+            <i class="fa-solid fa-city"></i> <span class="nav-text">Capital Capitalizer</span>
         </button>
         <button class="nav-btn" onclick="game.switchMode('topx')">
-            <i class="fa-solid fa-trophy"></i> <span class="nav-text">Top X</span>
+            <i class="fa-solid fa-trophy"></i> <span class="nav-text">Rank Rectifier</span>
         </button>
         <button class="nav-btn nav-btn-info" onclick="game.switchMode('highscores')">
             <i class="fa-solid fa-medal"></i> <span class="nav-text">Highscores</span>
@@ -75,14 +75,14 @@
                         <div class="game-card-icon">
                             <i class="fa-solid fa-street-view"></i>
                         </div>
-                        <h2 class="game-card-title">World Explorer</h2>
+                        <h2 class="game-card-title">GeoGobbler</h2>
                         <p class="game-card-desc">Explore 360° panoramas and guess the location</p>
                     </div>
                     <div class="game-card" onclick="game.switchMode('flag')">
                         <div class="game-card-icon">
                             <i class="fa-solid fa-flag"></i>
                         </div>
-                        <h2 class="game-card-title">Flag Master</h2>
+                        <h2 class="game-card-title">Flag Fusilier</h2>
                         <p class="game-card-desc">Identify countries by their flags</p>
                     </div>
                     <div class="game-card" onclick="game.switchMode('shape')">
@@ -96,14 +96,14 @@
                         <div class="game-card-icon">
                             <i class="fa-solid fa-city"></i>
                         </div>
-                        <h2 class="game-card-title">Capital City</h2>
+                        <h2 class="game-card-title">Capital Capitalizer</h2>
                         <p class="game-card-desc">Test your knowledge of world capitals</p>
                     </div>
                     <div class="game-card" onclick="game.switchMode('topx')">
                         <div class="game-card-icon">
                             <i class="fa-solid fa-trophy"></i>
                         </div>
-                        <h2 class="game-card-title">Top X</h2>
+                        <h2 class="game-card-title">Rank Rectifier</h2>
                         <p class="game-card-desc">Rank countries by demographic statistics</p>
                     </div>
                     <div class="info-card" onclick="game.switchMode('highscores')">
@@ -226,11 +226,11 @@
                             <label for="highscore-game-select">Game:</label>
                             <select id="highscore-game-select" class="game-select" onchange="game.updateHighscoresDisplay()">
                                 <option value="all">All Games</option>
-                                <option value="explorer">World Explorer</option>
-                                <option value="flag">Flag Master</option>
+                                <option value="explorer">GeoGobbler</option>
+                                <option value="flag">Flag Fusilier</option>
                                 <option value="shape">Shape Shifter</option>
-                                <option value="capital">Capital City</option>
-                                <option value="topx">Top X</option>
+                                <option value="capital">Capital Capitalizer</option>
+                                <option value="topx">Rank Rectifier</option>
                             </select>
                         </div>
                         <div class="game-filter">

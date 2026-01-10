@@ -137,7 +137,7 @@ aside {
 }
 .screen.active { display: flex; }
 
-/* Enable scrolling on all screens except World Explorer */
+/* Enable scrolling on all screens except GeoGobbler */
 .screen:not(#screen-explorer) {
     overflow-y: auto;
     overflow-x: hidden;

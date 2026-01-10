@@ -1176,11 +1176,11 @@ class GameEngine {
                 // Show all games
                 const allScores = await this.highscoresManager.getAllScores();
                 const gameNames = {
-                    explorer: 'World Explorer',
-                    flag: 'Flag Master',
+                    explorer: 'GeoGobbler',
+                    flag: 'Flag Fusilier',
                     shape: 'Shape Shifter',
-                    capital: 'Capital City',
-                    topx: 'Top X'
+                    capital: 'Capital Capitalizer',
+                    topx: 'Rank Rectifier'
                 };
 
                 let html = '';
