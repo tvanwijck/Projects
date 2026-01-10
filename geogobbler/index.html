@@ -356,7 +356,13 @@
 <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
 
 <!-- Game Scripts -->
-<script src="js/data.js"></script>
+<!-- Game Data - Initialize first, then load all data files -->
+<script src="js/data/game-data-init.js"></script>
+<script src="js/data/explorer-data.js"></script>
+<script src="js/data/flags-data.js"></script>
+<script src="js/data/shapes-data.js"></script>
+<script src="js/data/capitals-data.js"></script>
+<script src="js/data/topx-data.js"></script>
 <script src="js/metadata-extractor.js"></script>
 <script src="js/shape-loader.js"></script>
 <script src="js/panorama.js"></script>

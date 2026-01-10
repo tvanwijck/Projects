@@ -282,7 +282,7 @@ class GameEngine {
             this.dataPool = [...GAME_DATA.capitals];
             this.startQuizRound('capital');
         } else if (mode === 'topx') {
-            this.dataPool = [...GAME_DATA.topxQuestions];
+            this.dataPool = [...GAME_DATA.topx.questions];
             this.startTopXRound();
         }
     }
