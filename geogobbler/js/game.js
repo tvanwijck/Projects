@@ -1251,16 +1251,19 @@ class GameEngine {
         const currentUsername = this.highscoresManager.getUsername();
         
         let html = '<table class="highscores-table"><thead><tr>';
-        html += '<th>Rank</th><th>Username</th><th>Score</th><th>Date</th>';
+        html += '<th>Rank</th><th>Username</th><th>Score</th><th>Rounds</th><th>Date</th>';
         html += '</tr></thead><tbody>';
 
         scores.forEach((score, index) => {
             const isOwnScore = score.username === currentUsername;
             const rowClass = isOwnScore ? 'style="background: rgba(79, 70, 229, 0.2);"' : '';
+            // Handle legacy scores without rounds property (default to 5 or show N/A)
+            const rounds = score.rounds !== undefined ? score.rounds : 'N/A';
             html += `<tr ${rowClass}>`;
             html += `<td class="rank-cell">${index + 1}</td>`;
             html += `<td class="username-cell">${this.escapeHtml(score.username)}</td>`;
             html += `<td class="score-cell">${score.score.toLocaleString()}</td>`;
+            html += `<td class="rounds-cell">${rounds}</td>`;
             html += `<td class="date-cell">${this.highscoresManager.formatDate(score.timestamp)}</td>`;
             html += '</tr>';
         });

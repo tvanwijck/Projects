@@ -1511,14 +1511,22 @@ aside {
     width: 80px;
 }
 
-.highscores-table th:nth-child(2),
-.highscores-table th:nth-child(3),
-.highscores-table th:nth-child(4) {
-    width: calc((100% - 80px) / 3);
+.highscores-table th:nth-child(2) {
+    width: calc((100% - 200px) * 0.25);
 }
 
 .highscores-table th:nth-child(3) {
+    width: calc((100% - 200px) * 0.35);
     text-align: left;
+}
+
+.highscores-table th:nth-child(4) {
+    width: 100px;
+    text-align: center;
+}
+
+.highscores-table th:nth-child(5) {
+    width: calc((100% - 200px) * 0.4);
 }
 
 .highscores-table td {
@@ -1558,6 +1566,14 @@ aside {
     color: var(--secondary);
     text-align: left;
     font-size: 1.5rem;
+    overflow: visible;
+    white-space: normal;
+}
+
+.rounds-cell {
+    color: var(--text-light);
+    font-weight: 600;
+    text-align: center;
     overflow: visible;
     white-space: normal;
 }
