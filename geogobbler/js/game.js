@@ -6,7 +6,7 @@ class GameEngine {
     constructor() {
         this.score = 0;
         this.round = 1;
-        this.maxRounds = 5;
+        this.maxRounds = this.loadRoundsSetting();
         this.currentMode = 'explorer';
         
         this.pano = new PanoramaViewer('pano-view');
@@ -19,8 +19,8 @@ class GameEngine {
         this.usedItems = []; // Track used questions to prevent duplicates
         
         // Highscores display state
-        this.currentTimePeriod = 'today';
-        this.currentGameFilter = 'explorer';
+        this.currentTimePeriod = 'allTime';
+        this.currentGameFilter = 'all';
     }
 
     /**
@@ -197,10 +197,56 @@ class GameEngine {
     }
 
     /**
+     * Load rounds setting from localStorage
+     * @returns {number} - Number of rounds (default: 5)
+     */
+    loadRoundsSetting() {
+        const savedRounds = localStorage.getItem('geoguess_rounds');
+        if (savedRounds) {
+            const rounds = parseInt(savedRounds, 10);
+            if ([5, 10, 20].includes(rounds)) {
+                return rounds;
+            }
+        }
+        return 5; // Default to 5 rounds
+    }
+
+    /**
+     * Update rounds setting and save to localStorage
+     * @param {number} rounds - Number of rounds (5, 10, or 20)
+     */
+    updateRoundsSetting(rounds) {
+        if (![5, 10, 20].includes(rounds)) {
+            console.warn('Invalid rounds value:', rounds);
+            return;
+        }
+        localStorage.setItem('geoguess_rounds', rounds.toString());
+        this.maxRounds = rounds;
+        
+        // Update UI if a game is active
+        this.updateUI();
+        
+        // Update rounds dots to reflect current setting
+        document.querySelectorAll('.rounds-dot').forEach(dot => {
+            const dotRounds = parseInt(dot.dataset.rounds, 10);
+            if (dotRounds === rounds) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+
+    /**
      * Show homepage
      */
     showHomePage() {
         this.currentMode = 'home';
+        
+        // Sync rounds setting with dots
+        const currentRounds = this.loadRoundsSetting();
+        this.maxRounds = currentRounds;
+        this.updateRoundsSetting(currentRounds); // This will update the dots visually
         
         // Hide score board on homepage
         const scoreBoard = document.querySelector('.score-board');
@@ -725,7 +771,7 @@ class GameEngine {
         
         // Save score to highscores
         if (this.highscoresManager && this.currentMode !== 'home' && this.currentMode !== 'highscores') {
-            this.highscoresManager.saveScore(this.currentMode, this.score).catch(err => {
+            this.highscoresManager.saveScore(this.currentMode, this.score, this.maxRounds).catch(err => {
                 console.error('Error saving score:', err);
             });
         }
@@ -1120,8 +1166,9 @@ class GameEngine {
         const content = document.getElementById('highscores-content');
         if (!content) return;
 
-        const gameFilter = document.getElementById('highscore-game-select')?.value || 'explorer';
+        const gameFilter = document.getElementById('highscore-game-select')?.value || 'all';
         const usernameFilter = document.getElementById('highscore-username-select')?.value || 'all';
+        const roundsFilter = document.getElementById('highscore-rounds-select')?.value || 'any';
         this.currentGameFilter = gameFilter;
 
         try {
@@ -1145,6 +1192,16 @@ class GameEngine {
                         scores = scores.filter(score => score.username === usernameFilter);
                     }
                     
+                    // Apply rounds filter
+                    if (roundsFilter !== 'any') {
+                        const roundsValue = parseInt(roundsFilter, 10);
+                        scores = scores.filter(score => {
+                            // Only show scores with matching rounds value
+                            // Legacy scores (without rounds property) are excluded when filtering by specific rounds
+                            return score.rounds === roundsValue;
+                        });
+                    }
+                    
                     if (scores.length > 0) {
                         html += `<h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--accent);">${gameName}</h3>`;
                         html += this.renderScoresTable(scores);
@@ -1163,6 +1220,16 @@ class GameEngine {
                 // Apply username filter
                 if (usernameFilter !== 'all') {
                     scores = scores.filter(score => score.username === usernameFilter);
+                }
+                
+                // Apply rounds filter
+                if (roundsFilter !== 'any') {
+                    const roundsValue = parseInt(roundsFilter, 10);
+                    scores = scores.filter(score => {
+                        // Only show scores with matching rounds value
+                        // Legacy scores (without rounds property) are excluded when filtering by specific rounds
+                        return score.rounds === roundsValue;
+                    });
                 }
                 
                 if (scores.length === 0) {

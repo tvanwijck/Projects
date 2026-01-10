@@ -56,6 +56,20 @@
         <div id="screen-home" class="screen active">
             <div class="home-container">
                 <h1 class="home-welcome">Let&apos;s explore the world!</h1>
+                <div class="settings-bar">
+                    <div class="rounds-option" onclick="game.updateRoundsSetting(5)">
+                        <span class="rounds-label">5 rounds</span>
+                        <div class="rounds-dot" data-rounds="5"></div>
+                    </div>
+                    <div class="rounds-option" onclick="game.updateRoundsSetting(10)">
+                        <span class="rounds-label">10 rounds</span>
+                        <div class="rounds-dot" data-rounds="10"></div>
+                    </div>
+                    <div class="rounds-option" onclick="game.updateRoundsSetting(20)">
+                        <span class="rounds-label">20 rounds</span>
+                        <div class="rounds-dot" data-rounds="20"></div>
+                    </div>
+                </div>
                 <div class="home-grid">
                     <div class="game-card" onclick="game.switchMode('explorer')">
                         <div class="game-card-icon">
@@ -211,12 +225,12 @@
                         <div class="game-filter">
                             <label for="highscore-game-select">Game:</label>
                             <select id="highscore-game-select" class="game-select" onchange="game.updateHighscoresDisplay()">
+                                <option value="all">All Games</option>
                                 <option value="explorer">World Explorer</option>
                                 <option value="flag">Flag Master</option>
                                 <option value="shape">Shape Shifter</option>
                                 <option value="capital">Capital City</option>
                                 <option value="topx">Top X</option>
-                                <option value="all">All Games</option>
                             </select>
                         </div>
                         <div class="game-filter">
@@ -225,11 +239,20 @@
                                 <option value="all">All Users</option>
                             </select>
                         </div>
+                        <div class="game-filter">
+                            <label for="highscore-rounds-select">Rounds:</label>
+                            <select id="highscore-rounds-select" class="game-select" onchange="game.updateHighscoresDisplay()">
+                                <option value="any">Any</option>
+                                <option value="5">5 rounds</option>
+                                <option value="10">10 rounds</option>
+                                <option value="20">20 rounds</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="time-period-tabs">
-                        <button class="period-tab active" data-period="today" onclick="game.switchTimePeriod('today')">Today</button>
+                        <button class="period-tab" data-period="today" onclick="game.switchTimePeriod('today')">Today</button>
                         <button class="period-tab" data-period="week" onclick="game.switchTimePeriod('week')">This Week</button>
-                        <button class="period-tab" data-period="allTime" onclick="game.switchTimePeriod('allTime')">All-Time</button>
+                        <button class="period-tab active" data-period="allTime" onclick="game.switchTimePeriod('allTime')">All-Time</button>
                     </div>
                 </div>
 

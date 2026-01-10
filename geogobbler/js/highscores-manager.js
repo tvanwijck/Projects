@@ -236,8 +236,11 @@ class HighscoresManager {
 
     /**
      * Save a score for a game mode
+     * @param {string} gameMode - The game mode (explorer, flag, shape, capital, topx)
+     * @param {number} score - The score achieved
+     * @param {number} rounds - The number of rounds played (default: 5)
      */
-    async saveScore(gameMode, score) {
+    async saveScore(gameMode, score, rounds = 5) {
         if (!this.storageAdapter) {
             await this.init();
         }
@@ -265,7 +268,8 @@ class HighscoresManager {
         const scoreEntry = {
             username: this.username,
             score: score,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            rounds: rounds
         };
 
         // Add to all-time (always)

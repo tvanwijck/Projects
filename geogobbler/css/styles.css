@@ -141,6 +141,8 @@ aside {
 .screen:not(#screen-explorer) {
     overflow-y: auto;
     overflow-x: hidden;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
     /* Hide scrollbar for Chrome, Safari, Opera */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
@@ -748,8 +750,7 @@ aside {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 100%;
+    justify-content: flex-start;
 }
 
 .home-welcome {
@@ -762,6 +763,116 @@ aside {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+.settings-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+    padding: 2rem 2.5rem;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(245, 158, 11, 0.15));
+    border-radius: 20px;
+    border: 3px solid var(--primary);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4), 0 0 40px rgba(79, 70, 229, 0.2);
+    width: 100%;
+    max-width: 700px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent, rgba(79, 70, 229, 0.1));
+    pointer-events: none;
+}
+
+.rounds-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.rounds-option:hover {
+    background: rgba(79, 70, 229, 0.2);
+    transform: translateY(-3px);
+}
+
+.rounds-option:active {
+    transform: translateY(-1px);
+}
+
+.rounds-label {
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.rounds-option:hover .rounds-label {
+    color: var(--accent);
+}
+
+.rounds-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(148, 163, 184, 0.4);
+    border: 3px solid #475569;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.rounds-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    transition: transform 0.3s ease;
+}
+
+.rounds-option:hover .rounds-dot {
+    background: rgba(79, 70, 229, 0.3);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+}
+
+.rounds-dot.active {
+    background: rgba(79, 70, 229, 0.3);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.6), 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.rounds-dot.active::after {
+    transform: translate(-50%, -50%) scale(1);
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+.rounds-option:hover .rounds-dot.active {
+    box-shadow: 0 0 25px rgba(79, 70, 229, 0.8), 0 0 15px rgba(245, 158, 11, 0.6);
 }
 
 .home-grid {
@@ -911,6 +1022,10 @@ aside {
 /* Mobile Responsive */
 @media (max-width: 768px) {
     body { flex-direction: column; }
+    .screen:not(#screen-explorer) {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
     aside { 
         width: 100%; 
         flex-direction: row; 
@@ -962,6 +1077,28 @@ aside {
     .home-welcome {
         font-size: 2rem;
         margin-bottom: 2rem;
+    }
+    .settings-bar {
+        flex-direction: row;
+        padding: 1.5rem 1rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .rounds-option {
+        padding: 0.75rem 1rem;
+        flex: 1;
+        min-width: 120px;
+    }
+    .rounds-label {
+        font-size: 0.95rem;
+    }
+    .rounds-dot {
+        width: 16px;
+        height: 16px;
+    }
+    .rounds-dot::after {
+        width: 8px;
+        height: 8px;
     }
     .home-grid {
         grid-template-columns: repeat(2, 1fr);
