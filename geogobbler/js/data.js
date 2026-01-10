@@ -1394,6 +1394,43 @@ const GAME_DATA = {
             elevation: null,
             copyright: "From the Owner, Photo by: Google"
         },
+        { 
+            name: "45.8094234,15.9784723", 
+            coords: [45.8094234, 15.9784723], 
+            img: "images/45.8094234,15.9784723.jpg", 
+            hint: "Hint text",
+            panoramaId: "NVbk7XK8kOSCQYS2aiycOQ",
+            northRotation: 176.57,
+            dateTaken: "2024-07-01",
+            resolution: "16384x8192",
+            elevation: null,
+            copyright: "From the Owner, Photo by: Google"
+        },
+        { 
+            name: "46.885333,17.8931668", 
+            coords: [46.88533302368212, 17.89316677674388], 
+            img: "images/46.885333,17.8931668.jpg", 
+            hint: "Hint text",
+            panoramaId: "CAoSFkNJSE0wb2dLRUlDQWdJQ3hyTld4Ync.",
+            northRotation: 87.25,
+            dateTaken: "2023-05-01",
+            resolution: "16384x8192",
+            elevation: null,
+            copyright: "© Balazs L. 3Dpano (Panoinsight)"
+        },
+        { 
+            name: "-0.0964156,34.7638209", 
+            coords: [-0.0964156, 34.7638209], 
+            img: "images/-0.0964156,34.7638209.jpg", 
+            hint: "Hint text",
+            panoramaId: "EFd1ZClNK2mXYmKHoBGN9g",
+            northRotation: 194.31,
+            dateTaken: "2024-07-01",
+            resolution: "16384x8192",
+            elevation: null,
+            copyright: "From the Owner, Photo by: Google"
+        },
+
 
 
 
