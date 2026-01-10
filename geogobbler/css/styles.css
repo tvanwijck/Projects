@@ -275,7 +275,7 @@ aside {
 
 .map-style-select {
     flex: 1;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: #1e293b;
     border: 1px solid #334155;
     border-radius: var(--radius);
     color: var(--text-light);
@@ -283,6 +283,11 @@ aside {
     font-size: 0.875rem;
     cursor: pointer;
     transition: all 0.2s;
+}
+
+.map-style-select option {
+    background-color: #1e293b;
+    color: var(--text-light);
 }
 
 .map-style-select:hover {
