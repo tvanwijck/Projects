@@ -137,6 +137,20 @@ aside {
 }
 .screen.active { display: flex; }
 
+/* Enable scrolling on all screens except World Explorer */
+.screen:not(#screen-explorer) {
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Hide scrollbar for Chrome, Safari, Opera */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari, Opera */
+.screen:not(#screen-explorer)::-webkit-scrollbar {
+    display: none;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -1143,26 +1157,13 @@ aside {
     padding: 2rem;
     overflow-y: auto;
     height: 100%;
-    /* Custom scrollbar styling - minimalistic and transparent */
-    scrollbar-width: thin;
-    scrollbar-color: rgba(79, 70, 229, 0.3) transparent;
+    /* Hide scrollbar but keep scrolling functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
 }
 
 .highscores-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.highscores-container::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.highscores-container::-webkit-scrollbar-thumb {
-    background: rgba(79, 70, 229, 0.3);
-    border-radius: 4px;
-}
-
-.highscores-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(79, 70, 229, 0.5);
+    display: none; /* Chrome, Safari, Opera */
 }
 
 .highscores-header {
