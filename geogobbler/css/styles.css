@@ -468,13 +468,24 @@ aside {
     padding: 2.5rem;
     border-radius: var(--radius);
     text-align: center;
-    max-width: 500px;
+    max-width: 700px;
     width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     border: 1px solid #334155;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     animation: slideUp 0.3s ease;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
     pointer-events: auto; /* Modal content should be clickable */
+    /* Hide scrollbar but keep scrolling functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari, Opera */
+.modal-content::-webkit-scrollbar {
+    display: none;
 }
 
 .modal-content.collapsing {
@@ -491,6 +502,60 @@ aside {
 .modal-title { font-size: 2rem; margin-bottom: 1rem; }
 .modal-score { font-size: 3rem; color: var(--accent); font-weight: bold; margin: 1rem 0; }
 .modal-info { color: var(--text-gray); margin-bottom: 2rem; }
+
+/* Ranking Comparison Styles */
+.ranking-comparison-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.ranking-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: left;
+}
+
+.ranking-column-title {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ranking-item {
+    padding: 0.75rem 1rem;
+    background: #334155;
+    border-radius: var(--radius);
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.ranking-item-correct {
+    color: var(--secondary);
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 3px solid var(--secondary);
+}
+
+.ranking-item-close {
+    color: var(--accent);
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 3px solid var(--accent);
+}
+
+.ranking-item-wrong {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid var(--danger);
+}
 
 .modal-buttons {
     display: flex;
@@ -1269,6 +1334,11 @@ aside {
     }
     .home-grid {
         grid-template-columns: 1fr;
+    }
+    .ranking-comparison-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
     }
     .home-welcome {
         font-size: 1.5rem;

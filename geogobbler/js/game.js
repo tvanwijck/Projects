@@ -910,35 +910,42 @@ class GameEngine {
         const userRanking = this.topxManager.getRanking();
         const correctRanking = this.currentData.correctRanking;
         
-        // Calculate score using Spearman correlation
-        const correlation = this.calculateSpearmanCorrelation(userRanking, correctRanking);
-        const points = Math.round(5000 * correlation);
+        // Calculate score using new system that awards points for correct/close answers
+        const points = this.calculateRankingScore(userRanking, correctRanking);
         this.score += points;
 
-        // Show results
+        // Show results based on score percentage
+        const scorePercentage = points / 5000;
         let message = "";
-        if (correlation === 1.0) {
+        if (scorePercentage === 1.0) {
             message = "Perfect! You got the ranking exactly right!";
-        } else if (correlation >= 0.8) {
+        } else if (scorePercentage >= 0.8) {
             message = "Excellent! Very close to the correct ranking.";
-        } else if (correlation >= 0.6) {
+        } else if (scorePercentage >= 0.6) {
             message = "Good job! You got most of it right.";
-        } else if (correlation >= 0.4) {
+        } else if (scorePercentage >= 0.4) {
             message = "Not bad, but there's room for improvement.";
-        } else {
+        } else if (scorePercentage > 0) {
             message = "Keep trying! Check the correct ranking below.";
+        } else {
+            message = "Try again! Use the correct ranking as a reference.";
         }
 
         // Highlight correct/incorrect positions
         this.highlightRankingResults(userRanking, correctRanking);
 
-        const correctRankingText = correctRanking.map((country, index) => 
-            `${index + 1}. ${country}`
-        ).join('<br>');
+        // Create rank maps for color coding
+        const correctRanks = new Map();
+        correctRanking.forEach((country, index) => {
+            correctRanks.set(country, index + 1); // 1-based rank
+        });
+
+        // Generate side-by-side ranking HTML with color coding
+        const rankingHTML = this.generateRankingComparisonHTML(userRanking, correctRanking, correctRanks);
 
         this.showResultModal(
             points, 
-            `${message}<br><br><strong>Correct Ranking:</strong><br>${correctRankingText}`
+            `${message}<br><br>${rankingHTML}`
         );
     }
 
@@ -986,6 +993,59 @@ class GameEngine {
     }
 
     /**
+     * Calculate ranking score with minimum points for correct/close answers
+     * Awards points per item: correct = full points, close = partial points, wrong = 0
+     * @param {Array} userRanking - User's ranking
+     * @param {Array} correctRanking - Correct ranking
+     * @returns {number} - Score points (0 to 5000)
+     */
+    calculateRankingScore(userRanking, correctRanking) {
+        if (userRanking.length !== correctRanking.length) {
+            return 0;
+        }
+
+        // Create rank maps
+        const userRanks = new Map();
+        const correctRanks = new Map();
+        
+        userRanking.forEach((item, index) => {
+            userRanks.set(item, index + 1);
+        });
+        
+        correctRanking.forEach((item, index) => {
+            correctRanks.set(item, index + 1);
+        });
+
+        const n = userRanking.length;
+        const pointsPerItem = 5000 / n; // Maximum points per item if correct
+        let totalPoints = 0;
+
+        userRanking.forEach(item => {
+            const userRank = userRanks.get(item);
+            const correctRank = correctRanks.get(item);
+            
+            if (userRank !== undefined && correctRank !== undefined) {
+                const diff = Math.abs(userRank - correctRank);
+                
+                if (diff === 0) {
+                    // Correct position: full points
+                    totalPoints += pointsPerItem;
+                } else if (diff === 1) {
+                    // Close (1 position off): 75% of points
+                    totalPoints += pointsPerItem * 0.75;
+                } else if (diff === 2) {
+                    // Close (2 positions off): 50% of points
+                    totalPoints += pointsPerItem * 0.5;
+                }
+                // Wrong (diff > 2): 0 points (no addition)
+            }
+        });
+
+        // Round to nearest integer and ensure max is 5000
+        return Math.min(5000, Math.round(totalPoints));
+    }
+
+    /**
      * Highlight ranking results (correct/incorrect positions)
      * @param {Array} userRanking - User's ranking
      * @param {Array} correctRanking - Correct ranking
@@ -1011,6 +1071,61 @@ class GameEngine {
                 item.classList.add('wrong-position');
             }
         });
+    }
+
+    /**
+     * Get color category for a ranking item based on position difference
+     * @param {number} userRank - User's rank (1-based)
+     * @param {number} correctRank - Correct rank (1-based)
+     * @returns {string} - Color category: 'correct', 'close', or 'wrong'
+     */
+    getRankingItemColorCategory(userRank, correctRank) {
+        const diff = Math.abs(userRank - correctRank);
+        if (diff === 0) {
+            return 'correct'; // Green: correct place, full points
+        } else if (diff <= 2) {
+            return 'close'; // Yellow: wrong place but close, some points
+        } else {
+            return 'wrong'; // Red: wrong place and not close, no points
+        }
+    }
+
+    /**
+     * Generate side-by-side ranking comparison HTML with color coding
+     * @param {Array} userRanking - User's ranking
+     * @param {Array} correctRanking - Correct ranking
+     * @param {Map} correctRanks - Map of country to correct rank (1-based)
+     * @returns {string} - HTML string for the comparison
+     */
+    generateRankingComparisonHTML(userRanking, correctRanking, correctRanks) {
+        let html = '<div class="ranking-comparison-container">';
+        
+        // Left side: Your Ranking
+        html += '<div class="ranking-column">';
+        html += '<strong class="ranking-column-title">Your Ranking:</strong>';
+        html += '<div class="ranking-list">';
+        userRanking.forEach((country, index) => {
+            const userRank = index + 1;
+            const correctRank = correctRanks.get(country) || 0;
+            const colorCategory = this.getRankingItemColorCategory(userRank, correctRank);
+            html += `<div class="ranking-item ranking-item-${colorCategory}">${userRank}. ${country}</div>`;
+        });
+        html += '</div>';
+        html += '</div>';
+
+        // Right side: Correct Ranking
+        html += '<div class="ranking-column">';
+        html += '<strong class="ranking-column-title">Correct Ranking:</strong>';
+        html += '<div class="ranking-list">';
+        correctRanking.forEach((country, index) => {
+            const correctRank = index + 1;
+            html += `<div class="ranking-item ranking-item-correct">${correctRank}. ${country}</div>`;
+        });
+        html += '</div>';
+        html += '</div>';
+
+        html += '</div>';
+        return html;
     }
 
     // --- HIGHSCORES LOGIC ---
