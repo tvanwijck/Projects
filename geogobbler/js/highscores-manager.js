@@ -245,6 +245,9 @@ class HighscoresManager {
             await this.init();
         }
 
+        // Refresh username from localStorage to ensure we have the latest value
+        this.username = localStorage.getItem('geoguess_username') || 'Anonymous';
+
         // Try to restore file handle if needed (but don't block if user cancelled)
         if (this.needsFileRestore) {
             try {
