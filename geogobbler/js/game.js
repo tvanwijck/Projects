@@ -41,15 +41,12 @@ class GameEngine {
             }, 500);
         }
         // Initialize country shape loader
-        if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') {
-            this.shapeLoader.init().then(() => {
-                console.log('Country shapes ready');
-            }).catch(err => {
-                console.error('Failed to initialize country shapes:', err);
-            });
-        } else {
-            console.warn('D3.js or TopoJSON not loaded. Country shapes may not work.');
-        }
+        // No external library needed - using pre-rendered SVG images
+        this.shapeLoader.init().then(() => {
+            console.log('Country shapes ready');
+        }).catch(err => {
+            console.error('Failed to initialize country shapes:', err);
+        });
         
         // Start with homepage
         this.showHomePage();
@@ -502,10 +499,10 @@ class GameEngine {
         } else if (type === 'shape') {
             const shapeContainer = document.getElementById('shape-container');
             if (shapeContainer) {
-                // Always prioritize TopoJSON for detailed shapes
+                // Use MapLibre GL JS for detailed country shapes
                 if (this.shapeLoader) {
-                    // Try to render with TopoJSON (will initialize if needed)
-                    const renderTopoJSON = () => {
+                    // Render with MapLibre (will initialize if needed)
+                    const renderShape = () => {
                         this.shapeLoader.renderCountryShape(correctItem.id, shapeContainer, {
                             fill: 'var(--primary)',
                             stroke: '#fff',
@@ -514,20 +511,20 @@ class GameEngine {
                     };
                     
                     if (this.shapeLoader.initialized) {
-                        renderTopoJSON();
+                        renderShape();
                     } else {
-                        // Show loading message and initialize TopoJSON
+                        // Show loading message and initialize MapLibre
                         shapeContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: #94a3b8;">Loading detailed country shape...</div>`;
                         this.shapeLoader.init().then(() => {
-                            renderTopoJSON();
+                            renderShape();
                         }).catch((error) => {
-                            console.error('Failed to load TopoJSON shapes:', error);
-                            // Only use simple SVG fallback if TopoJSON completely fails AND path exists
+                            console.error('Failed to load country shapes:', error);
+                            // Only use simple SVG fallback if MapLibre completely fails AND path exists
                             if (correctItem.path && correctItem.path.trim() !== '') {
                                 console.warn('Falling back to simple SVG path for:', correctItem.name);
                                 shapeContainer.innerHTML = `<svg viewBox="${correctItem.viewBox || '0 0 800 500'}" class="shape-svg"><path d="${correctItem.path}" class="shape-path" fill="var(--primary)" stroke="#fff" stroke-width="2" /></svg>`;
                             } else {
-                                shapeContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: #94a3b8;">Unable to load shape for ${correctItem.name}. Please refresh the page.</div>`;
+                                shapeContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: #94a3b8;">Unable to load shape for ${correctItem.name} (${correctItem.id}). Please refresh the page.</div>`;
                             }
                         });
                     }

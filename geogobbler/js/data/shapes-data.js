@@ -164,7 +164,7 @@ GAME_DATA.shapes = [
         { id: 'cg', name: 'Republic of the Congo', path: '', viewBox: '0 0 800 500' },
         { id: 'cf', name: 'Central African Republic', path: '', viewBox: '0 0 800 500' },
         { id: 'gq', name: 'Equatorial Guinea', path: '', viewBox: '0 0 800 500' },
-        { id: 'st', name: 'SÃ£o TomÃ© and PrÃ­ncipe', path: '', viewBox: '0 0 800 500' },
+        { id: 'st', name: 'São Tomé and Príncipe', path: '', viewBox: '0 0 800 500' },
         { id: 'gw', name: 'Guinea-Bissau', path: '', viewBox: '0 0 800 500' },
         { id: 'gm', name: 'Gambia', path: '', viewBox: '0 0 800 500' },
         { id: 'mr', name: 'Mauritania', path: '', viewBox: '0 0 800 500' },
