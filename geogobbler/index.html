@@ -272,16 +272,26 @@
         <div id="modal-details" class="modal-info">You were 500km away!</div>
         <div id="modal-score-val" class="modal-score">0</div>
         <div class="modal-buttons">
-            <button id="view-map-btn" class="view-map-btn" onclick="game.showMapView()" style="display: none;">
-                <i class="fa-solid fa-map"></i> View Map
-            </button>
-            <button id="next-round-btn" class="next-btn" onclick="game.nextRound()">Next Round <i class="fa-solid fa-arrow-right"></i></button>
-            <button id="go-home-btn" class="home-btn" onclick="game.showHomePage()" style="display: none;">
-                <i class="fa-solid fa-home"></i> Go to Home
-            </button>
-            <button id="play-again-btn" class="play-again-btn" onclick="game.restartGame()" style="display: none;">
-                <i class="fa-solid fa-rotate-right"></i> Play Again
-            </button>
+            <div class="modal-buttons-row">
+                <button id="view-map-btn" class="view-map-btn" onclick="game.showMapView()" style="display: none;">
+                    <i class="fa-solid fa-map"></i> View Map
+                </button>
+                <button id="next-round-btn" class="next-btn" onclick="game.nextRound()">Next Round <i class="fa-solid fa-arrow-right"></i></button>
+                <button id="highscores-btn" class="highscores-btn" onclick="game.showHighscoresPage()" style="display: none;">
+                    <i class="fa-solid fa-medal"></i> Highscores
+                </button>
+                <button id="go-home-btn" class="home-btn" onclick="game.showHomePage()" style="display: none;">
+                    <i class="fa-solid fa-home"></i> Go to Home
+                </button>
+                <button id="play-again-btn" class="play-again-btn" onclick="game.restartGame()" style="display: none;">
+                    <i class="fa-solid fa-rotate-right"></i> Play Again
+                </button>
+            </div>
+            <div class="modal-buttons-row">
+                <button id="celebrate-btn" class="celebrate-btn" onclick="game.celebrate()" style="display: none;">
+                    <i class="fa-solid fa-sparkles"></i> Celebrate!
+                </button>
+            </div>
         </div>
     </div>
 </div>

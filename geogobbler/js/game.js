@@ -640,8 +640,10 @@ class GameEngine {
         const viewMapBtn = document.getElementById('view-map-btn');
         const collapsedModal = document.getElementById('collapsed-modal');
         const nextRoundBtn = document.getElementById('next-round-btn');
+        const highscoresBtn = document.getElementById('highscores-btn');
         const goHomeBtn = document.getElementById('go-home-btn');
         const playAgainBtn = document.getElementById('play-again-btn');
+        const celebrateBtn = document.getElementById('celebrate-btn');
         
         // Reset modal state
         if (modal) {
@@ -659,8 +661,10 @@ class GameEngine {
         
         // Show next round button, hide end game buttons
         if (nextRoundBtn) nextRoundBtn.style.display = 'flex';
+        if (highscoresBtn) highscoresBtn.style.display = 'none';
         if (goHomeBtn) goHomeBtn.style.display = 'none';
         if (playAgainBtn) playAgainBtn.style.display = 'none';
+        if (celebrateBtn) celebrateBtn.style.display = 'none';
         
         if (scoreEl) scoreEl.innerText = `+${points}`;
         if (detailsEl) detailsEl.innerHTML = details;
@@ -748,16 +752,21 @@ class GameEngine {
         const viewMapBtn = document.getElementById('view-map-btn');
         const collapsedModal = document.getElementById('collapsed-modal');
         const nextRoundBtn = document.getElementById('next-round-btn');
+        const highscoresBtn = document.getElementById('highscores-btn');
         const goHomeBtn = document.getElementById('go-home-btn');
         const playAgainBtn = document.getElementById('play-again-btn');
+        const celebrateBtn = document.getElementById('celebrate-btn');
         
-        // Hide View Map button and collapsed modal for end game
+        // Hide View Map button, Next Round button, and collapsed modal for end game
         if (viewMapBtn) viewMapBtn.style.display = 'none';
+        if (nextRoundBtn) nextRoundBtn.style.display = 'none';
         if (collapsedModal) collapsedModal.style.display = 'none';
         
         // Show end game buttons
+        if (highscoresBtn) highscoresBtn.style.display = 'flex';
         if (goHomeBtn) goHomeBtn.style.display = 'flex';
         if (playAgainBtn) playAgainBtn.style.display = 'flex';
+        if (celebrateBtn) celebrateBtn.style.display = 'flex';
         
         // Reset modal state
         if (modal) {
@@ -780,6 +789,13 @@ class GameEngine {
                 console.error('Error saving score:', err);
             });
         }
+    }
+
+    /**
+     * Celebrate function - triggers confetti when Celebrate button is clicked
+     */
+    celebrate() {
+        this.triggerConfetti();
     }
 
     /**
@@ -843,8 +859,10 @@ class GameEngine {
     restartGame() {
         const modal = document.getElementById('result-modal');
         const nextRoundBtn = document.getElementById('next-round-btn');
+        const highscoresBtn = document.getElementById('highscores-btn');
         const goHomeBtn = document.getElementById('go-home-btn');
         const playAgainBtn = document.getElementById('play-again-btn');
+        const celebrateBtn = document.getElementById('celebrate-btn');
         
         // Hide modal
         if (modal) modal.style.display = 'none';
@@ -858,6 +876,8 @@ class GameEngine {
         // Hide end game buttons, show next round button
         if (goHomeBtn) goHomeBtn.style.display = 'none';
         if (playAgainBtn) playAgainBtn.style.display = 'none';
+        if (highscoresBtn) highscoresBtn.style.display = 'none';
+        if (celebrateBtn) celebrateBtn.style.display = 'none';
         if (nextRoundBtn) nextRoundBtn.style.display = 'flex';
         
         // Start new round of the same game
@@ -1220,6 +1240,12 @@ class GameEngine {
      */
     async showHighscoresPage() {
         this.currentMode = 'highscores';
+        
+        // Close modal if open
+        const modal = document.getElementById('result-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
         
         // Hide score board
         const scoreBoard = document.querySelector('.score-board');

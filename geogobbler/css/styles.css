@@ -559,6 +559,13 @@ aside {
 
 .modal-buttons {
     display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.modal-buttons-row {
+    display: flex;
     gap: 12px;
     width: 100%;
 }
@@ -1082,6 +1089,55 @@ aside {
 
 .play-again-btn:hover {
     background: #d97706;
+}
+
+.highscores-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex: 1;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.highscores-btn:hover {
+    background: var(--primary-dark);
+}
+
+.celebrate-btn {
+    background: linear-gradient(135deg, #f59e0b, #ef4444, #ec4899, #8b5cf6, #6366f1);
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: auto;
+    min-width: 150px;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 1rem auto 0 auto;
+}
+.celebrate-btn:hover {
+    transform: scale(1.05);
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* Mobile Responsive */
