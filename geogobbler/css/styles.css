@@ -1724,3 +1724,11 @@ aside {
     }
 }
 
+/* Confetti canvas - ensure it appears above modals */
+/* Target canvas elements that are likely from confetti library */
+body > canvas[style*="position: fixed"],
+body > canvas[style*="position:fixed"] {
+    z-index: 3000 !important;
+    pointer-events: none !important;
+}
+

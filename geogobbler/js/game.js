@@ -769,12 +769,72 @@ class GameEngine {
         if (detailsEl) detailsEl.innerHTML = "Game Over! You've completed all rounds.";
         if (titleEl) titleEl.innerText = "Final Score";
         
+        // Trigger confetti celebration after a short delay to ensure modal is visible
+        setTimeout(() => {
+            this.triggerConfetti();
+        }, 100);
+        
         // Save score to highscores
         if (this.highscoresManager && this.currentMode !== 'home' && this.currentMode !== 'highscores') {
             this.highscoresManager.saveScore(this.currentMode, this.score, this.maxRounds).catch(err => {
                 console.error('Error saving score:', err);
             });
         }
+    }
+
+    /**
+     * Trigger confetti celebration animation
+     */
+    triggerConfetti() {
+        if (typeof confetti === 'undefined') {
+            console.warn('Confetti library not loaded');
+            return;
+        }
+
+        // Main burst from center
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+
+        // Ensure confetti canvas has proper z-index after it's created
+        // The library creates the canvas dynamically, so we need to set z-index after creation
+        setTimeout(() => {
+            const canvases = document.querySelectorAll('canvas');
+            canvases.forEach(canvas => {
+                const style = window.getComputedStyle(canvas);
+                if (style.position === 'fixed') {
+                    canvas.style.zIndex = '3000';
+                    canvas.style.pointerEvents = 'none';
+                }
+            });
+        }, 0);
+
+        // Additional bursts for more celebration
+        setTimeout(() => {
+            confetti({
+                particleCount: 50,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 }
+            });
+            confetti({
+                particleCount: 50,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 }
+            });
+        }, 250);
+
+        // Final burst
+        setTimeout(() => {
+            confetti({
+                particleCount: 100,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+        }, 400);
     }
 
     /**
