@@ -71,6 +71,13 @@ class PanoramaViewer {
         const width = container.clientWidth;
         const height = container.clientHeight;
 
+        // Ensure container has valid dimensions
+        if (width === 0 || height === 0) {
+            // Container not visible yet, retry after a short delay
+            setTimeout(() => this.initThreeJS(container, imageUrl), 100);
+            return;
+        }
+
         // Create scene
         this.scene = new THREE.Scene();
 
