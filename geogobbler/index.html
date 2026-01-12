@@ -45,6 +45,9 @@
         <button class="nav-btn" onclick="game.switchMode('topx')">
             <i class="fa-solid fa-trophy"></i> <span class="nav-text">Rank Rectifier</span>
         </button>
+        <button class="nav-btn" onclick="game.switchMode('border')">
+            <i class="fa-solid fa-border-all"></i> <span class="nav-text">Border Brother</span>
+        </button>
         <button class="nav-btn nav-btn-info" onclick="game.switchMode('highscores')">
             <i class="fa-solid fa-medal"></i> <span class="nav-text">Highscores</span>
         </button>
@@ -105,6 +108,13 @@
                         </div>
                         <h2 class="game-card-title">Rank Rectifier</h2>
                         <p class="game-card-desc">Rank countries by demographic statistics</p>
+                    </div>
+                    <div class="game-card" onclick="game.switchMode('border')">
+                        <div class="game-card-icon">
+                            <i class="fa-solid fa-border-all"></i>
+                        </div>
+                        <h2 class="game-card-title">Border Brother</h2>
+                        <p class="game-card-desc">Identify countries that border the given country</p>
                     </div>
                     <div class="info-card" onclick="game.switchMode('highscores')">
                         <div class="info-card-icon">
@@ -195,6 +205,20 @@
             </div>
         </div>
 
+        <!-- MODE 6: BORDERS -->
+        <div id="screen-border" class="screen">
+            <div class="quiz-container">
+                <h2 class="quiz-question">Which countries border...</h2>
+                <div class="border-country-display">
+                    <img id="border-flag-img" class="border-flag" src="" alt="Flag">
+                    <h1 id="border-country-name">France</h1>
+                </div>
+                <p class="border-hint">Select all countries that share a border (you can select multiple)</p>
+                <div class="options-grid" id="border-options"></div>
+                <button id="border-submit-btn" class="border-submit-btn">Submit Answer</button>
+            </div>
+        </div>
+
         <!-- HIGHSCORES SCREEN -->
         <div id="screen-highscores" class="screen">
             <div class="highscores-container">
@@ -231,6 +255,7 @@
                                 <option value="shape">Shape Shifter</option>
                                 <option value="capital">Capital Capitalizer</option>
                                 <option value="topx">Rank Rectifier</option>
+                                <option value="border">Border Brother</option>
                             </select>
                         </div>
                         <div class="game-filter">
@@ -397,6 +422,7 @@
 <script src="js/data/shapes-data.js"></script>
 <script src="js/data/capitals-data.js"></script>
 <script src="js/data/topx-data.js"></script>
+<script src="js/data/borders-data.js"></script>
 <script src="js/metadata-extractor.js"></script>
 <script src="js/shape-loader.js"></script>
 <script src="js/panorama.js"></script>

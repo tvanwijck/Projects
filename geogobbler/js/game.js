@@ -181,6 +181,10 @@ class GameEngine {
             if (this.currentMode === 'topx') {
                 return used.question === item.question;
             }
+            // For border: compare by country name
+            if (this.currentMode === 'border') {
+                return used.country === item.country;
+            }
             return false;
         });
     }
@@ -327,6 +331,9 @@ class GameEngine {
         } else if (mode === 'topx') {
             this.dataPool = [...GAME_DATA.topx.questions];
             this.startTopXRound();
+        } else if (mode === 'border') {
+            this.dataPool = [...GAME_DATA.borders];
+            this.startBorderRound();
         }
     }
 
@@ -665,7 +672,14 @@ class GameEngine {
         
         if (scoreEl) scoreEl.innerText = `+${points}`;
         if (detailsEl) detailsEl.innerHTML = details;
-        if (titleEl) titleEl.innerText = points > 0 ? "Round Complete" : "Oops!";
+        // For border mode, use encouragement message as title, otherwise use existing logic
+        if (titleEl) {
+            if (this.currentMode === 'border' && this.currentEncouragement) {
+                titleEl.innerText = this.currentEncouragement;
+            } else {
+                titleEl.innerText = points > 0 ? "Round Complete" : "Oops!";
+            }
+        }
         
         // Store details for collapsed modal
         this.lastModalDetails = details;
@@ -882,6 +896,8 @@ class GameEngine {
             this.startExplorerRound();
         } else if (this.currentMode === 'topx') {
             this.startTopXRound();
+        } else if (this.currentMode === 'border') {
+            this.startBorderRound();
         } else {
             this.startQuizRound(this.currentMode);
         }
@@ -921,6 +937,8 @@ class GameEngine {
             this.startExplorerRound();
         } else if (this.currentMode === 'topx') {
             this.startTopXRound();
+        } else if (this.currentMode === 'border') {
+            this.startBorderRound();
         } else {
             this.startQuizRound(this.currentMode);
         }
@@ -1205,6 +1223,264 @@ class GameEngine {
         return html;
     }
 
+    // --- BORDER LOGIC ---
+    
+    /**
+     * Start a new border round
+     */
+    startBorderRound() {
+        if (this.round > this.maxRounds) {
+            this.showEndGameModal();
+            return;
+        }
+
+        // Reset neighbors for scoring
+        this.currentNeighborsForScoring = null;
+
+        // Get available items (not yet used)
+        const availableItems = this.getAvailableItems();
+        
+        // If no available items, reset used items (edge case: more rounds than items)
+        if (availableItems.length === 0) {
+            this.usedItems = [];
+            availableItems.push(...this.dataPool);
+        }
+
+        // Pick random country from available items
+        const countryIndex = Math.floor(Math.random() * availableItems.length);
+        const countryData = availableItems[countryIndex];
+        this.currentData = countryData;
+        
+        // Mark as used
+        this.usedItems.push(countryData);
+
+        // Display country name and flag
+        const countryNameEl = document.getElementById('border-country-name');
+        const flagImg = document.getElementById('border-flag-img');
+        if (countryNameEl) countryNameEl.innerText = countryData.country;
+        if (flagImg) flagImg.src = `https://flagcdn.com/w640/${countryData.code}.png`;
+
+        // Generate options: mix of correct neighbors and wrong countries
+        const correctNeighbors = [...countryData.neighbors];
+        const allCountries = this.dataPool.map(item => item.country);
+        
+        // Determine how many neighbors to include (all if <= 6, otherwise random selection)
+        let neighborsToInclude = correctNeighbors;
+        if (correctNeighbors.length > 6) {
+            // Randomly select 4-6 neighbors
+            const numToInclude = Math.min(6, Math.max(4, Math.floor(Math.random() * 3) + 4));
+            neighborsToInclude = [...correctNeighbors].sort(() => Math.random() - 0.5).slice(0, numToInclude);
+        }
+        
+        // Start with correct neighbors
+        let options = [...neighborsToInclude];
+        
+        // Add wrong countries to reach 6-8 total options
+        const targetOptions = Math.max(6, Math.min(8, neighborsToInclude.length + 3));
+        while (options.length < targetOptions) {
+            const randomCountry = allCountries[Math.floor(Math.random() * allCountries.length)];
+            // Don't include the country itself or its neighbors
+            if (randomCountry !== countryData.country && 
+                !correctNeighbors.includes(randomCountry) && 
+                !options.includes(randomCountry)) {
+                options.push(randomCountry);
+            }
+        }
+        
+        // Shuffle options
+        options.sort(() => Math.random() - 0.5);
+
+        // Store neighbors to include for scoring (only the ones shown in options)
+        this.currentNeighborsForScoring = neighborsToInclude;
+
+        // Render border options with checkboxes
+        this.renderBorderOptions(options, neighborsToInclude);
+
+        // Setup submit button
+        const submitBtn = document.getElementById('border-submit-btn');
+        if (submitBtn) {
+            submitBtn.onclick = () => this.submitBorderAnswer();
+            submitBtn.disabled = false;
+        }
+
+        this.updateUI();
+    }
+
+    /**
+     * Render border options with checkboxes
+     * @param {Array} options - Array of country names
+     * @param {Array} correctNeighbors - Array of correct neighbor country names
+     */
+    renderBorderOptions(options, correctNeighbors) {
+        const container = document.getElementById('border-options');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        options.forEach(countryName => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'border-option';
+            optionDiv.dataset.country = countryName;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `border-option-${countryName}`;
+            checkbox.value = countryName;
+            
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = countryName;
+            label.style.cursor = 'pointer';
+            label.style.flex = '1';
+            
+            // Handle checkbox change
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    optionDiv.classList.add('selected');
+                } else {
+                    optionDiv.classList.remove('selected');
+                }
+            });
+            
+            // Allow clicking the whole div to toggle
+            optionDiv.addEventListener('click', (e) => {
+                if (e.target !== checkbox && e.target !== label) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+            
+            optionDiv.appendChild(checkbox);
+            optionDiv.appendChild(label);
+            container.appendChild(optionDiv);
+        });
+    }
+
+    /**
+     * Submit border answer and calculate score
+     */
+    submitBorderAnswer() {
+        const submitBtn = document.getElementById('border-submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+        }
+
+        // Collect selected countries
+        const checkboxes = document.querySelectorAll('#border-options input[type="checkbox"]:checked');
+        const selectedCountries = Array.from(checkboxes).map(cb => cb.value);
+        
+        // Use the neighbors that were actually shown in the options (for scoring)
+        const correctNeighbors = this.currentNeighborsForScoring || this.currentData.neighbors;
+        const totalNeighbors = correctNeighbors.length;
+        
+        let correctCount = 0;
+        let wrongCount = 0;
+        
+        selectedCountries.forEach(country => {
+            if (correctNeighbors.includes(country)) {
+                correctCount++;
+            } else {
+                wrongCount++;
+            }
+        });
+        
+        // Calculate score
+        // Maximum score per round: 5000 points
+        let points = 0;
+        
+        // Special case: country with no neighbors
+        if (totalNeighbors === 0) {
+            // If no neighbors and player selected nothing: perfect (5000 points)
+            // If no neighbors and player selected anything: all wrong (0 points)
+            if (selectedCountries.length === 0) {
+                points = 5000;
+            } else {
+                points = 0;
+            }
+        } else {
+            // Normal case: calculate based on correct/wrong selections
+            // Special case: if all neighbors are correct and no wrong selections, give full 5000 points
+            if (correctCount === totalNeighbors && wrongCount === 0) {
+                points = 5000;
+            } else {
+                const pointsPerNeighbor = 5000 / totalNeighbors;
+                // Calculate points: correct neighbors add points, wrong selections subtract points
+                points = (correctCount * pointsPerNeighbor) - (wrongCount * pointsPerNeighbor);
+                points = Math.max(0, Math.round(points)); // Minimum 0, no negative scores
+                points = Math.min(5000, points); // Maximum 5000
+            }
+        }
+        
+        this.score += points;
+
+        // Highlight results
+        const options = document.querySelectorAll('.border-option');
+        const selectedSet = new Set(selectedCountries);
+        const correctSet = new Set(correctNeighbors);
+        
+        options.forEach(option => {
+            const country = option.dataset.country;
+            option.classList.remove('selected', 'correct', 'wrong', 'missed');
+            
+            if (selectedSet.has(country)) {
+                if (correctSet.has(country)) {
+                    option.classList.add('correct');
+                } else {
+                    option.classList.add('wrong');
+                }
+            } else if (correctSet.has(country)) {
+                option.classList.add('missed');
+            }
+        });
+
+        // Disable all checkboxes
+        document.querySelectorAll('#border-options input[type="checkbox"]').forEach(cb => {
+            cb.disabled = true;
+        });
+
+        // Generate result message
+        const missedNeighbors = correctNeighbors.filter(n => !selectedCountries.includes(n));
+        const wrongSelections = selectedCountries.filter(c => !correctNeighbors.includes(c));
+        
+        // Determine encouragement message based on points
+        let encouragement = "";
+        if (points === 0) {
+            encouragement = "Try again!";
+        } else if (points >= 1 && points <= 1000) {
+            encouragement = "Alright!";
+        } else if (points >= 1001 && points <= 2000) {
+            encouragement = "Good!";
+        } else if (points >= 2001 && points <= 3000) {
+            encouragement = "Very good!";
+        } else if (points >= 3001 && points <= 4000) {
+            encouragement = "Great!";
+        } else if (points >= 4001 && points <= 4999) {
+            encouragement = "Fantastic!";
+        } else if (points === 5000) {
+            encouragement = "Absolutely perfect!";
+        }
+        
+        // Store encouragement for use in modal title
+        this.currentEncouragement = encouragement;
+        
+        // Build standardized message (without encouragement - it goes in the title)
+        let message = "";
+        
+        // Special case: country with no neighbors
+        if (totalNeighbors === 0) {
+            message = `You got 0 out of 0 neighbors correct.`;
+        } else {
+            // Standard format: "You got X out of X neighbors correct."
+            message = `You got ${correctCount} out of ${totalNeighbors} neighbors correct.`;
+        }
+        
+        // Add missed neighbors if any
+        if (missedNeighbors.length > 0) {
+            message += `<br>Missed: ${missedNeighbors.join(', ')}`;
+        }
+
+        this.showResultModal(points, message);
+    }
+
     // --- HIGHSCORES LOGIC ---
 
     /**
@@ -1330,7 +1606,7 @@ class GameEngine {
             const usernames = new Set();
             
             // Extract unique usernames from all scores
-            for (const gameMode of ['explorer', 'flag', 'shape', 'capital', 'topx']) {
+            for (const gameMode of ['explorer', 'flag', 'shape', 'capital', 'topx', 'border']) {
                 const scores = await this.highscoresManager.getScores(gameMode, 'allTime');
                 scores.forEach(score => {
                     if (score.username && score.username.trim()) {
@@ -1378,7 +1654,8 @@ class GameEngine {
                     flag: 'Flag Fusilier',
                     shape: 'Shape Shifter',
                     capital: 'Capital Capitalizer',
-                    topx: 'Rank Rectifier'
+                    topx: 'Rank Rectifier',
+                    border: 'Border Brother'
                 };
 
                 let html = '';
