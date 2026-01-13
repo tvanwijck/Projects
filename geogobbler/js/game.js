@@ -190,6 +190,11 @@ class GameEngine {
                 return (used.point1.name === item.point1.name && used.point2.name === item.point2.name) ||
                        (used.point1.name === item.point2.name && used.point2.name === item.point1.name);
             }
+            // For compass: check if same point pair (in either order)
+            if (this.currentMode === 'compass') {
+                return (used.point1.name === item.point1.name && used.point2.name === item.point2.name) ||
+                       (used.point1.name === item.point2.name && used.point2.name === item.point1.name);
+            }
             return false;
         });
     }
@@ -342,6 +347,9 @@ class GameEngine {
         } else if (mode === 'distance') {
             this.dataPool = [...GAME_DATA.distance];
             this.startDistanceRound();
+        } else if (mode === 'compass') {
+            this.dataPool = [...GAME_DATA.compass];
+            this.startCompassRound();
         }
     }
 
@@ -908,6 +916,8 @@ class GameEngine {
             this.startBorderRound();
         } else if (this.currentMode === 'distance') {
             this.startDistanceRound();
+        } else if (this.currentMode === 'compass') {
+            this.startCompassRound();
         } else {
             this.startQuizRound(this.currentMode);
         }
@@ -951,6 +961,8 @@ class GameEngine {
             this.startBorderRound();
         } else if (this.currentMode === 'distance') {
             this.startDistanceRound();
+        } else if (this.currentMode === 'compass') {
+            this.startCompassRound();
         } else {
             this.startQuizRound(this.currentMode);
         }
@@ -1654,6 +1666,325 @@ class GameEngine {
         this.showResultModal(points, message);
     }
 
+    // --- COMPASS COMMANDER LOGIC ---
+    
+    /**
+     * Start a new compass round
+     */
+    startCompassRound() {
+        if (this.round > this.maxRounds) {
+            this.showEndGameModal();
+            return;
+        }
+
+        // Get available questions (not yet used)
+        const availableQuestions = this.getAvailableItems();
+        
+        // If no available questions, reset used items
+        if (availableQuestions.length === 0) {
+            this.usedItems = [];
+            availableQuestions.push(...this.dataPool);
+        }
+
+        // Pick random question
+        const questionIndex = Math.floor(Math.random() * availableQuestions.length);
+        const question = availableQuestions[questionIndex];
+        this.currentData = question;
+        
+        // Mark as used
+        this.usedItems.push(question);
+
+        // Update question text
+        const questionEl = document.getElementById('compass-question');
+        if (questionEl) {
+            questionEl.textContent = `Which direction is ${question.point1.name} from ${question.point2.name}?`;
+        }
+
+        // Store correct bearing
+        this.correctBearing = question.bearing;
+        this.userBearing = 0; // Start at North (0°)
+        this.displayedNeedleAngle = 0; // Track displayed angle (can go beyond 0-360 for smooth transitions)
+
+        // Reset compass UI
+        this.updateCompassNeedle(0);
+        this.updateDirectionDisplay(0);
+        
+        // Hide correct answer indicator
+        const correctIndicator = document.getElementById('compass-correct');
+        if (correctIndicator) {
+            correctIndicator.style.display = 'none';
+        }
+
+        // Setup compass interactions
+        this.setupCompassInteractions();
+
+        // Setup submit button
+        const submitBtn = document.getElementById('compass-submit-btn');
+        if (submitBtn) {
+            submitBtn.onclick = () => this.submitCompassAnswer();
+            submitBtn.disabled = false;
+        }
+
+        this.updateUI();
+    }
+
+    /**
+     * Setup compass interaction handlers (drag and click)
+     */
+    setupCompassInteractions() {
+        const compassCircle = document.querySelector('.compass-circle');
+        if (!compassCircle) return;
+
+        let isDragging = false;
+
+        // Get compass center and radius
+        const getCompassCenter = () => {
+            const rect = compassCircle.getBoundingClientRect();
+            return {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2
+            };
+        };
+
+        // Calculate angle from center to point
+        const getAngleFromPoint = (centerX, centerY, pointX, pointY) => {
+            const dx = pointX - centerX;
+            const dy = pointY - centerY;
+            // Math.atan2(dy, dx) gives: 
+            //   East (right): dx>0, dy=0 → 0°
+            //   South (down): dx=0, dy>0 → 90°
+            //   West (left): dx<0, dy=0 → 180°
+            //   North (up): dx=0, dy<0 → -90° (or 270°)
+            // We want compass bearing: North=0°, East=90°, South=180°, West=270°
+            // So: compass = (atan2_angle + 90 + 360) % 360
+            let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            // Convert to compass bearing (0° = North, clockwise)
+            angle = (angle + 90 + 360) % 360;
+            return Math.round(angle);
+        };
+
+        // Update compass based on angle
+        const updateFromAngle = (angle, isDragging = false) => {
+            this.userBearing = angle;
+            this.updateCompassNeedle(angle, isDragging);
+            this.updateDirectionDisplay(angle);
+        };
+
+        // Mouse events
+        compassCircle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            const center = getCompassCenter();
+            const angle = getAngleFromPoint(center.x, center.y, e.clientX, e.clientY);
+            updateFromAngle(angle, true);
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const center = getCompassCenter();
+            const angle = getAngleFromPoint(center.x, center.y, e.clientX, e.clientY);
+            updateFromAngle(angle, true);
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Click event (for click-to-select)
+        compassCircle.addEventListener('click', (e) => {
+            // Only handle click if not dragging (to avoid double updates)
+            if (!isDragging) {
+                const center = getCompassCenter();
+                const angle = getAngleFromPoint(center.x, center.y, e.clientX, e.clientY);
+                updateFromAngle(angle);
+            }
+        });
+
+        // Touch events for mobile
+        compassCircle.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            const touch = e.touches[0];
+            const center = getCompassCenter();
+            const angle = getAngleFromPoint(center.x, center.y, touch.clientX, touch.clientY);
+            updateFromAngle(angle, true);
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            const center = getCompassCenter();
+            const angle = getAngleFromPoint(center.x, center.y, touch.clientX, touch.clientY);
+            updateFromAngle(angle, true);
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+    }
+
+    /**
+     * Update compass needle rotation with smooth transitions across 0°/360° boundary
+     * @param {number} degrees - Bearing in degrees (0-360)
+     * @param {boolean} isDragging - Whether user is currently dragging (disable transition for responsiveness)
+     */
+    updateCompassNeedle(degrees, isDragging = false) {
+        const needle = document.getElementById('compass-needle');
+        if (!needle) return;
+
+        // Normalize the target angle to 0-360
+        const targetAngle = this.normalizeAngle(degrees);
+        
+        // Get current displayed angle (normalize to 0-360 for comparison, but keep original for accumulation)
+        const currentNormalized = this.normalizeAngle(this.displayedNeedleAngle);
+        
+        // Calculate the angular difference
+        let diff = targetAngle - currentNormalized;
+        
+        // Find shortest path (handle wrap-around)
+        // If difference is > 180°, go the other way around
+        if (Math.abs(diff) > 180) {
+            if (diff > 0) {
+                diff = diff - 360; // Go counterclockwise (shorter path)
+            } else {
+                diff = diff + 360; // Go clockwise (shorter path)
+            }
+        }
+        
+        // Update displayed angle by adding the difference to the current value
+        // This allows smooth transitions even when crossing 0°/360°
+        this.displayedNeedleAngle = this.displayedNeedleAngle + diff;
+        
+        // During dragging, disable transition for immediate response
+        // When not dragging (e.g., clicking), enable transition for smooth animation
+        if (isDragging) {
+            needle.style.transition = 'none';
+        } else {
+            needle.style.transition = 'transform 0.1s ease-out';
+        }
+        
+        // Apply the rotation (CSS handles values beyond 0-360 correctly)
+        needle.style.transform = `translate(-50%, -100%) rotate(${this.displayedNeedleAngle}deg)`;
+    }
+
+    /**
+     * Update direction display text
+     * @param {number} degrees - Bearing in degrees (0-360)
+     */
+    updateDirectionDisplay(degrees) {
+        const display = document.getElementById('compass-direction-display');
+        if (display) {
+            const directionText = this.degreesToDirection(degrees);
+            display.textContent = `${degrees}° ${directionText}`;
+        }
+    }
+
+    /**
+     * Convert degrees to cardinal/intercardinal direction text
+     * @param {number} degrees - Bearing in degrees (0-360)
+     * @returns {string} - Direction text (N, NE, E, SE, S, SW, W, NW)
+     */
+    degreesToDirection(degrees) {
+        const normalized = this.normalizeAngle(degrees);
+        
+        // Handle exact cardinal directions
+        if (normalized === 0 || normalized === 360) return 'N';
+        if (normalized === 90) return 'E';
+        if (normalized === 180) return 'S';
+        if (normalized === 270) return 'W';
+        
+        // Handle intercardinal and other directions
+        if (normalized > 0 && normalized < 45) return 'N';
+        if (normalized >= 45 && normalized < 90) return 'NE';
+        if (normalized > 90 && normalized < 135) return 'E';
+        if (normalized >= 135 && normalized < 180) return 'SE';
+        if (normalized > 180 && normalized < 225) return 'S';
+        if (normalized >= 225 && normalized < 270) return 'SW';
+        if (normalized > 270 && normalized < 315) return 'W';
+        if (normalized >= 315 && normalized < 360) return 'NW';
+        
+        return 'N'; // Default fallback
+    }
+
+    /**
+     * Normalize angle to 0-360 range
+     * @param {number} angle - Angle in degrees
+     * @returns {number} - Normalized angle (0-360)
+     */
+    normalizeAngle(angle) {
+        return ((angle % 360) + 360) % 360;
+    }
+
+    /**
+     * Calculate smallest angular difference between two bearings
+     * @param {number} angle1 - First angle in degrees
+     * @param {number} angle2 - Second angle in degrees
+     * @returns {number} - Angular difference in degrees (0-180)
+     */
+    angularDifference(angle1, angle2) {
+        const diff = Math.abs(angle1 - angle2);
+        return Math.min(diff, 360 - diff);
+    }
+
+    /**
+     * Submit compass answer and calculate score
+     */
+    submitCompassAnswer() {
+        const submitBtn = document.getElementById('compass-submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+        }
+
+        const userBearing = this.userBearing;
+        const correctBearing = this.correctBearing;
+        
+        // Calculate angular error (0-180 degrees)
+        const error = this.angularDifference(userBearing, correctBearing);
+        
+        // Calculate score: 5000 - (error * 27.7777), rounded up, clamped to [0, 5000]
+        let points = Math.ceil(5000 - (error * 27.7777));
+        points = Math.max(0, Math.min(5000, points));
+        
+        this.score += points;
+
+        // Show correct answer on compass
+        const correctIndicator = document.getElementById('compass-correct');
+        if (correctIndicator) {
+            correctIndicator.style.display = 'block';
+            correctIndicator.style.transform = `translate(-50%, -100%) rotate(${correctBearing}deg)`;
+        }
+
+        // Update display to show correct answer
+        const correctDirectionText = this.degreesToDirection(correctBearing);
+        const correctDisplay = `${Math.round(correctBearing)}° ${correctDirectionText}`;
+
+        // Generate result message
+        let message = "";
+        if (error === 0) {
+            message = "Perfect! You got the bearing exactly right!";
+        } else if (error <= 5) {
+            message = "Excellent! Very close to the correct bearing.";
+        } else if (error <= 15) {
+            message = "Good job! You were reasonably close.";
+        } else if (error <= 45) {
+            message = "Not bad, but there's room for improvement.";
+        } else if (error <= 90) {
+            message = "Keep practicing! Check the correct bearing below.";
+        } else {
+            message = "Try again! Use the correct bearing as a reference.";
+        }
+        
+        message += `<br><br>Your guess: ${userBearing}° ${this.degreesToDirection(userBearing)}<br>`;
+        message += `Correct answer: ${correctDisplay}<br>`;
+        message += `Error: ${error.toFixed(2)}°`;
+
+        // Delay before showing modal (1.5 seconds) so users can see correct answer on compass
+        setTimeout(() => {
+            this.showResultModal(points, message);
+        }, 1500);
+    }
+
     // --- HIGHSCORES LOGIC ---
 
     /**
@@ -1779,7 +2110,7 @@ class GameEngine {
             const usernames = new Set();
             
             // Extract unique usernames from all scores
-            for (const gameMode of ['explorer', 'flag', 'shape', 'capital', 'topx', 'border', 'distance']) {
+            for (const gameMode of ['explorer', 'flag', 'shape', 'capital', 'topx', 'border', 'distance', 'compass']) {
                 const scores = await this.highscoresManager.getScores(gameMode, 'allTime');
                 scores.forEach(score => {
                     if (score.username && score.username.trim()) {
@@ -1829,7 +2160,8 @@ class GameEngine {
                     capital: 'Capital Capitalizer',
                     topx: 'Rank Rectifier',
                     border: 'Border Brother',
-                    distance: 'Distance Decider'
+                    distance: 'Distance Decider',
+                    compass: 'Compass Commander'
                 };
 
                 let html = '';

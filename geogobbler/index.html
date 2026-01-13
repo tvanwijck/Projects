@@ -51,6 +51,9 @@
         <button class="nav-btn" onclick="game.switchMode('distance')">
             <i class="fa-solid fa-ruler"></i> <span class="nav-text">Distance Decider</span>
         </button>
+        <button class="nav-btn" onclick="game.switchMode('compass')">
+            <i class="fa-solid fa-compass"></i> <span class="nav-text">Compass Commander</span>
+        </button>
         <button class="nav-btn nav-btn-info" onclick="game.switchMode('highscores')">
             <i class="fa-solid fa-medal"></i> <span class="nav-text">Highscores</span>
         </button>
@@ -125,6 +128,13 @@
                         </div>
                         <h2 class="game-card-title">Distance Decider</h2>
                         <p class="game-card-desc">Guess distances between points around the world</p>
+                    </div>
+                    <div class="game-card" onclick="game.switchMode('compass')">
+                        <div class="game-card-icon">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <h2 class="game-card-title">Compass Commander</h2>
+                        <p class="game-card-desc">Determine the exact bearing between two locations</p>
                     </div>
                     <div class="info-card" onclick="game.switchMode('highscores')">
                         <div class="info-card-icon">
@@ -258,6 +268,35 @@
             </div>
         </div>
 
+        <!-- MODE 8: COMPASS -->
+        <div id="screen-compass" class="screen">
+            <div class="quiz-container">
+                <h2 id="compass-question" class="quiz-question">Which direction is... from...?</h2>
+                <div class="compass-wrapper">
+                    <div id="compass-container" class="compass-container">
+                        <div class="compass-circle">
+                            <!-- Cardinal markers -->
+                            <div class="compass-marker compass-n">N</div>
+                            <div class="compass-marker compass-e">E</div>
+                            <div class="compass-marker compass-s">S</div>
+                            <div class="compass-marker compass-w">W</div>
+                            <!-- Intercardinal markers -->
+                            <div class="compass-marker compass-ne">NE</div>
+                            <div class="compass-marker compass-se">SE</div>
+                            <div class="compass-marker compass-sw">SW</div>
+                            <div class="compass-marker compass-nw">NW</div>
+                            <!-- Needle -->
+                            <div id="compass-needle" class="compass-needle"></div>
+                            <!-- Correct answer indicator (hidden initially) -->
+                            <div id="compass-correct" class="compass-correct" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="compass-direction-display" class="compass-direction-display">0° N</div>
+                <button id="compass-submit-btn" class="compass-submit-btn">Submit Answer</button>
+            </div>
+        </div>
+
         <!-- HIGHSCORES SCREEN -->
         <div id="screen-highscores" class="screen">
             <div class="highscores-container">
@@ -296,6 +335,7 @@
                                 <option value="topx">Rank Rectifier</option>
                                 <option value="border">Border Brother</option>
                                 <option value="distance">Distance Decider</option>
+                                <option value="compass">Compass Commander</option>
                             </select>
                         </div>
                         <div class="game-filter">
@@ -464,6 +504,7 @@
 <script src="js/data/topx-data.js"></script>
 <script src="js/data/borders-data.js"></script>
 <script src="js/data/distance-data.js"></script>
+<script src="js/data/compass-data.js"></script>
 <script src="js/metadata-extractor.js"></script>
 <script src="js/shape-loader.js"></script>
 <script src="js/panorama.js"></script>

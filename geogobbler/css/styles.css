@@ -702,6 +702,213 @@ aside {
     transform: none;
 }
 
+/* --- COMPASS COMMANDER --- */
+.compass-wrapper {
+    width: 100%;
+    max-width: 500px;
+    margin: 2rem auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.compass-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1;
+    margin: 0 auto;
+}
+
+.compass-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--bg-panel);
+    border: 4px solid var(--primary);
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(79, 70, 229, 0.1);
+    user-select: none;
+    touch-action: none;
+}
+
+/* Cardinal markers */
+.compass-marker {
+    position: absolute;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.compass-n {
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+.compass-e {
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.compass-s {
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.compass-w {
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.compass-ne {
+    top: 15%;
+    right: 15%;
+    font-size: 0.9rem;
+}
+
+.compass-se {
+    bottom: 15%;
+    right: 15%;
+    font-size: 0.9rem;
+}
+
+.compass-sw {
+    bottom: 15%;
+    left: 15%;
+    font-size: 0.9rem;
+}
+
+.compass-nw {
+    top: 15%;
+    left: 15%;
+    font-size: 0.9rem;
+}
+
+/* Compass needle */
+.compass-needle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 45%;
+    background: linear-gradient(to top, var(--danger), var(--accent));
+    transform-origin: bottom center;
+    transform: translate(-50%, -100%) rotate(0deg);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+    transition: transform 0.1s ease-out;
+    pointer-events: none;
+}
+
+.compass-needle::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 8px solid var(--accent);
+}
+
+/* Correct answer indicator */
+.compass-correct {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 40%;
+    background: var(--secondary);
+    transform-origin: bottom center;
+    transform: translate(-50%, -100%) rotate(0deg);
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+    z-index: 15;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.compass-correct::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 10px solid var(--secondary);
+}
+
+/* Direction display */
+.compass-direction-display {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--accent);
+    margin: 1.5rem 0;
+    text-align: center;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compass-submit-btn {
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.compass-submit-btn:hover {
+    background: #059669;
+    transform: scale(1.05);
+}
+
+.compass-submit-btn:disabled {
+    background: #475569;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive compass */
+@media (max-width: 768px) {
+    .compass-container {
+        max-width: 300px;
+    }
+    
+    .compass-marker {
+        font-size: 1rem;
+    }
+    
+    .compass-n {
+        font-size: 1.2rem;
+    }
+    
+    .compass-direction-display {
+        font-size: 1.5rem;
+    }
+}
+
 /* --- Modals --- */
 .modal-overlay {
     position: fixed;
