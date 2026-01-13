@@ -48,6 +48,9 @@
         <button class="nav-btn" onclick="game.switchMode('border')">
             <i class="fa-solid fa-border-all"></i> <span class="nav-text">Border Brother</span>
         </button>
+        <button class="nav-btn" onclick="game.switchMode('distance')">
+            <i class="fa-solid fa-ruler"></i> <span class="nav-text">Distance Decider</span>
+        </button>
         <button class="nav-btn nav-btn-info" onclick="game.switchMode('highscores')">
             <i class="fa-solid fa-medal"></i> <span class="nav-text">Highscores</span>
         </button>
@@ -115,6 +118,13 @@
                         </div>
                         <h2 class="game-card-title">Border Brother</h2>
                         <p class="game-card-desc">Identify countries that border the given country</p>
+                    </div>
+                    <div class="game-card" onclick="game.switchMode('distance')">
+                        <div class="game-card-icon">
+                            <i class="fa-solid fa-ruler"></i>
+                        </div>
+                        <h2 class="game-card-title">Distance Decider</h2>
+                        <p class="game-card-desc">Guess distances between points around the world</p>
                     </div>
                     <div class="info-card" onclick="game.switchMode('highscores')">
                         <div class="info-card-icon">
@@ -219,6 +229,35 @@
             </div>
         </div>
 
+        <!-- MODE 7: DISTANCE -->
+        <div id="screen-distance" class="screen">
+            <div class="quiz-container">
+                <h2 id="distance-question" class="quiz-question">How far is... from...?</h2>
+                <div id="distance-display">0 km</div>
+                <div id="distance-visual-container">
+                    <div id="distance-line" class="distance-line"></div>
+                </div>
+                <div id="distance-slider-container">
+                    <div class="distance-controls">
+                        <div class="distance-buttons-left">
+                            <button class="distance-btn" data-change="-100">-100</button>
+                            <button class="distance-btn" data-change="-10">-10</button>
+                            <button class="distance-btn" data-change="-1">-1</button>
+                        </div>
+                        <div class="distance-slider-wrapper">
+                            <input type="range" id="distance-slider" min="0" max="40075" step="1" value="0">
+                        </div>
+                        <div class="distance-buttons-right">
+                            <button class="distance-btn" data-change="1">+1</button>
+                            <button class="distance-btn" data-change="10">+10</button>
+                            <button class="distance-btn" data-change="100">+100</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="distance-submit-btn" class="distance-submit-btn">Submit Answer</button>
+            </div>
+        </div>
+
         <!-- HIGHSCORES SCREEN -->
         <div id="screen-highscores" class="screen">
             <div class="highscores-container">
@@ -256,6 +295,7 @@
                                 <option value="capital">Capital Capitalizer</option>
                                 <option value="topx">Rank Rectifier</option>
                                 <option value="border">Border Brother</option>
+                                <option value="distance">Distance Decider</option>
                             </select>
                         </div>
                         <div class="game-filter">
@@ -423,6 +463,7 @@
 <script src="js/data/capitals-data.js"></script>
 <script src="js/data/topx-data.js"></script>
 <script src="js/data/borders-data.js"></script>
+<script src="js/data/distance-data.js"></script>
 <script src="js/metadata-extractor.js"></script>
 <script src="js/shape-loader.js"></script>
 <script src="js/panorama.js"></script>

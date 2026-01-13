@@ -185,6 +185,11 @@ class GameEngine {
             if (this.currentMode === 'border') {
                 return used.country === item.country;
             }
+            // For distance: check if same point pair (in either order)
+            if (this.currentMode === 'distance') {
+                return (used.point1.name === item.point1.name && used.point2.name === item.point2.name) ||
+                       (used.point1.name === item.point2.name && used.point2.name === item.point1.name);
+            }
             return false;
         });
     }
@@ -334,6 +339,9 @@ class GameEngine {
         } else if (mode === 'border') {
             this.dataPool = [...GAME_DATA.borders];
             this.startBorderRound();
+        } else if (mode === 'distance') {
+            this.dataPool = [...GAME_DATA.distance];
+            this.startDistanceRound();
         }
     }
 
@@ -898,6 +906,8 @@ class GameEngine {
             this.startTopXRound();
         } else if (this.currentMode === 'border') {
             this.startBorderRound();
+        } else if (this.currentMode === 'distance') {
+            this.startDistanceRound();
         } else {
             this.startQuizRound(this.currentMode);
         }
@@ -939,6 +949,8 @@ class GameEngine {
             this.startTopXRound();
         } else if (this.currentMode === 'border') {
             this.startBorderRound();
+        } else if (this.currentMode === 'distance') {
+            this.startDistanceRound();
         } else {
             this.startQuizRound(this.currentMode);
         }
@@ -1481,6 +1493,167 @@ class GameEngine {
         this.showResultModal(points, message);
     }
 
+    // --- DISTANCE DECIDER LOGIC ---
+    
+    /**
+     * Start a new distance round
+     */
+    startDistanceRound() {
+        if (this.round > this.maxRounds) {
+            this.showEndGameModal();
+            return;
+        }
+
+        // Get available questions (not yet used)
+        const availableQuestions = this.getAvailableItems();
+        
+        // If no available questions, reset used items
+        if (availableQuestions.length === 0) {
+            this.usedItems = [];
+            availableQuestions.push(...this.dataPool);
+        }
+
+        // Pick random question
+        const questionIndex = Math.floor(Math.random() * availableQuestions.length);
+        const question = availableQuestions[questionIndex];
+        this.currentData = question;
+        
+        // Mark as used
+        this.usedItems.push(question);
+
+        // Update question text
+        const questionEl = document.getElementById('distance-question');
+        if (questionEl) {
+            questionEl.textContent = `How far is ${question.point1.name} from ${question.point2.name}?`;
+        }
+
+        // Initialize slider
+        const slider = document.getElementById('distance-slider');
+        if (slider) {
+            slider.value = 0;
+            slider.min = 0;
+            slider.max = 40075; // Earth's circumference in km
+            slider.step = 1;
+        }
+
+        // Initialize visual and display
+        this.updateDistanceVisual(0);
+        const displayEl = document.getElementById('distance-display');
+        if (displayEl) {
+            displayEl.textContent = '0 km';
+        }
+
+        // Setup slider event listener
+        if (slider) {
+            slider.oninput = (e) => {
+                const value = parseInt(e.target.value);
+                this.updateDistanceVisual(value);
+            };
+        }
+
+        // Setup increment/decrement buttons
+        const buttons = document.querySelectorAll('.distance-btn');
+        buttons.forEach(btn => {
+            btn.onclick = (e) => {
+                const change = parseInt(e.target.dataset.change);
+                const currentValue = parseInt(slider.value);
+                const newValue = Math.max(0, Math.min(40075, currentValue + change));
+                slider.value = newValue;
+                this.updateDistanceVisual(newValue);
+            };
+        });
+
+        // Setup submit button
+        const submitBtn = document.getElementById('distance-submit-btn');
+        if (submitBtn) {
+            submitBtn.onclick = () => this.submitDistanceAnswer();
+            submitBtn.disabled = false;
+        }
+
+        this.updateUI();
+    }
+
+    /**
+     * Update visual representation based on slider value
+     * @param {number} value - Current slider value (distance in km)
+     */
+    updateDistanceVisual(value) {
+        const maxDistance = 40075; // Earth's circumference
+        const percentage = Math.min(100, (value / maxDistance) * 100);
+        
+        // Update line width
+        const lineEl = document.getElementById('distance-line');
+        if (lineEl) {
+            lineEl.style.width = `${percentage}%`;
+        }
+        
+        // Update display
+        const displayEl = document.getElementById('distance-display');
+        if (displayEl) {
+            displayEl.textContent = `${value.toLocaleString()} km`;
+        }
+    }
+
+    /**
+     * Submit distance answer and calculate score
+     */
+    submitDistanceAnswer() {
+        const submitBtn = document.getElementById('distance-submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+        }
+
+        const slider = document.getElementById('distance-slider');
+        if (!slider) return;
+
+        const userGuess = parseInt(slider.value);
+        const actualDistance = this.currentData.distance;
+        
+        // Calculate percentage error
+        const error = Math.abs(userGuess - actualDistance);
+        const errorPercentage = actualDistance > 0 ? error / actualDistance : 1;
+        
+        // Calculate score based on accuracy (similar to explorer mode but using percentage error)
+        let points = 0;
+        if (errorPercentage === 0) {
+            points = 5000; // Perfect guess
+        } else if (errorPercentage < 0.05) {
+            // Very close (< 5% error): 4000-4999 points
+            points = Math.round(5000 - (errorPercentage / 0.05) * 999);
+        } else if (errorPercentage < 0.15) {
+            // Good guess (5-15% error): 2000-3999 points
+            points = Math.round(4000 - ((errorPercentage - 0.05) / 0.10) * 1999);
+        } else if (errorPercentage < 0.30) {
+            // Fair guess (15-30% error): 1000-1999 points
+            points = Math.round(2000 - ((errorPercentage - 0.15) / 0.15) * 999);
+        } else {
+            // Poor guess (> 30% error): 0-999 points
+            points = Math.max(0, Math.round(1000 - ((errorPercentage - 0.30) / 0.70) * 999));
+        }
+        
+        this.score += points;
+
+        // Generate result message
+        let message = "";
+        if (errorPercentage === 0) {
+            message = "Perfect! You guessed the distance exactly right!";
+        } else if (errorPercentage < 0.05) {
+            message = "Excellent! Very close to the actual distance.";
+        } else if (errorPercentage < 0.15) {
+            message = "Good job! You were reasonably close.";
+        } else if (errorPercentage < 0.30) {
+            message = "Not bad, but there's room for improvement.";
+        } else {
+            message = "Keep practicing! Check the actual distance below.";
+        }
+        
+        message += `<br><br>Your guess: ${userGuess.toLocaleString()} km<br>`;
+        message += `Actual distance: ${actualDistance.toLocaleString()} km<br>`;
+        message += `Difference: ${error.toLocaleString()} km`;
+
+        this.showResultModal(points, message);
+    }
+
     // --- HIGHSCORES LOGIC ---
 
     /**
@@ -1606,7 +1779,7 @@ class GameEngine {
             const usernames = new Set();
             
             // Extract unique usernames from all scores
-            for (const gameMode of ['explorer', 'flag', 'shape', 'capital', 'topx', 'border']) {
+            for (const gameMode of ['explorer', 'flag', 'shape', 'capital', 'topx', 'border', 'distance']) {
                 const scores = await this.highscoresManager.getScores(gameMode, 'allTime');
                 scores.forEach(score => {
                     if (score.username && score.username.trim()) {
@@ -1655,7 +1828,8 @@ class GameEngine {
                     shape: 'Shape Shifter',
                     capital: 'Capital Capitalizer',
                     topx: 'Rank Rectifier',
-                    border: 'Border Brother'
+                    border: 'Border Brother',
+                    distance: 'Distance Decider'
                 };
 
                 let html = '';
